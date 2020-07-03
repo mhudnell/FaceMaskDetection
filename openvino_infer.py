@@ -27,34 +27,48 @@ id2class = {0: 'Mask', 1: 'NoMask'}
 
 class MaskNetwork:
 
-    def __init__(self, args):
+    def __init__(self, device="MYRIAD", cpu_extension=False):
         self._exec_net = None
         self._input_blob = None
 
-        self._start_openvino(args)
+        # self._start_openvino(device, cpu_extension)
 
-    def _start_openvino(self, args):
-        '''Initializes OpenVino and loads network'''
+    def _start_openvino(self, device, cpu_extension):
+        '''
+        Initializes OpenVino and loads network
+        
+        device: Specify the target device to infer on; CPU, GPU, FPGA, HDDL, MYRIAD or HETERO: is
+                acceptable. The sample will look for a suitable plugin for device specified.
+        '''
 
-        model_xml = "./FaceMaskDetection/models/openvino/face_mask_detection.xml"
+        # print("device:", device)
+        # if "CPU" in device:
+        #     print("HI CPU")
+        # elif "MYRIAD" in device:
+        #     print("HI MYRIAD")
+        # else:
+        #     print("HI")
+
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        model_xml = os.path.join(root_dir, "models", "openvino", "face_mask_detection.xml")
         model_bin = os.path.splitext(model_xml)[0] + ".bin"
 
         # Plugin initialization for specified device and load extensions library if specified
         log.info("Creating Inference Engine")
         ie = IECore()
-        if args.cpu_extension and 'CPU' in args.device:
-            ie.add_extension(args.cpu_extension, "CPU")
+        if cpu_extension and 'CPU' in device:
+            ie.add_extension(cpu_extension, "CPU")
 
         # Read IR (load the model)
         log.info("Loading network files:\n\t{}\n\t{}".format(model_xml, model_bin))
         net = ie.read_network(model=model_xml, weights=model_bin)
 
-        if "CPU" in args.device:
+        if "CPU" in device:
             supported_layers = ie.query_network(net, "CPU")
             not_supported_layers = [l for l in net.layers.keys() if l not in supported_layers]
             if len(not_supported_layers) != 0:
                 log.error("Following layers are not supported by the plugin for specified device {}:\n {}".
-                          format(args.device, ', '.join(not_supported_layers)))
+                          format(device, ', '.join(not_supported_layers)))
                 log.error("Please try to specify cpu extensions library path in sample's command line parameters using -l "
                           "or --cpu_extension command line argument")
                 sys.exit(1)
@@ -65,7 +79,7 @@ class MaskNetwork:
 
         # Loading model to the plugin
         log.info("Loading model to the plugin")
-        self._exec_net = ie.load_network(network=net, device_name=args.device)
+        self._exec_net = ie.load_network(network=net, device_name=device)
 
     def openvino_infer(self, image,
                        conf_thresh=0.5,
