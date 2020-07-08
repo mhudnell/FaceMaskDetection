@@ -31,7 +31,7 @@ class MaskNetwork:
         self._exec_net = None
         self._input_blob = None
 
-        # self._start_openvino(device, cpu_extension)
+        self._start_openvino(device, cpu_extension)
 
     def _start_openvino(self, device, cpu_extension):
         '''
@@ -40,14 +40,6 @@ class MaskNetwork:
         device: Specify the target device to infer on; CPU, GPU, FPGA, HDDL, MYRIAD or HETERO: is
                 acceptable. The sample will look for a suitable plugin for device specified.
         '''
-
-        # print("device:", device)
-        # if "CPU" in device:
-        #     print("HI CPU")
-        # elif "MYRIAD" in device:
-        #     print("HI MYRIAD")
-        # else:
-        #     print("HI")
 
         root_dir = os.path.dirname(os.path.abspath(__file__))
         model_xml = os.path.join(root_dir, "models", "openvino", "face_mask_detection.xml")
