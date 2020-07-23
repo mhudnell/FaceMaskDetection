@@ -10,8 +10,9 @@ from utils.nms import single_class_non_max_suppression
 import sys
 
 # anchor configuration
-feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]  # this is the size for 260x260
-# feature_map_sizes = [[45, 45], [23, 23], [12, 12], [6, 6], [4, 4]]  # this is the size for 160x160
+# feature_map_sizes = [[20, 20], [10, 10], [5, 5], [3, 3], [2, 2]]  # for input size 160
+feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]  # for input size 260
+# feature_map_sizes = [[45, 45], [23, 23], [12, 12], [6, 6], [4, 4]]  # for input size 360
 anchor_sizes = [[0.04, 0.056], [0.08, 0.11], [0.16, 0.22], [0.32, 0.45], [0.64, 0.72]]
 anchor_ratios = [[1, 0.62, 0.42]] * 5
 
