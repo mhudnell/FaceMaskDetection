@@ -72,6 +72,7 @@ class MaskNetwork:
 
         # Loading model to the plugin
         log.info("Loading model to the plugin")
+        print(f'Loading face mask network onto: {device}')
         self._exec_net = ie.load_network(network=net, device_name=device)
 
     def openvino_infer(self, image,
