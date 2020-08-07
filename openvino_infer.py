@@ -82,6 +82,10 @@ class MaskNetwork:
                        draw_result=True,
                        show_result=False
                        ):
+        """
+        Returns:
+            - output_info: [[class_id, conf_cls_0, conf_cls_1, xmin, ymin, xmax, ymax], ...]
+        """
         height, width, _ = image.shape
 
         # resize & adjust input
@@ -114,6 +118,10 @@ class MaskNetwork:
         output_info = []
         for idx in keep_idxs:
             conf = float(bbox_max_scores[idx])
+            conf_cls_0 = y_cls[idx][0]
+            conf_cls_1 = y_cls[idx][1]
+            conf_sum = conf_cls_0 + conf_cls_1
+            # print(f'y_cls[idx]:{y_cls[idx]}, sum=({conf_cls_0:.2f}+{conf_cls_1:.2f})={conf_sum:.2f}\nbbox_max_scores[idx]:{bbox_max_scores[idx]},\nbbox_max_score_classes[idx]:{bbox_max_score_classes[idx]}')
             class_id = bbox_max_score_classes[idx]
             bbox = y_bboxes[idx]
             # clip the coordinate, avoid the value exceed the image boundary.
@@ -130,7 +138,7 @@ class MaskNetwork:
                 cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 2)
                 cv2.putText(image, "%s: %.2f" % (id2class[class_id], conf), (xmin + 2, ymin - 2),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
-            output_info.append([class_id, conf, xmin, ymin, xmax, ymax])
+            output_info.append([class_id, conf_cls_0, conf_cls_1, xmin, ymin, xmax, ymax])
 
         if show_result:
             Image.fromarray(image).show()
